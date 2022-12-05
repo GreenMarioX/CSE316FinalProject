@@ -11,12 +11,7 @@ import RegisterScreen from './RegisterScreen'
 import SongCard from './SongCard'
 import SplashScreen from './SplashScreen'
 import Statusbar from './Statusbar'
-/*
-    This serves as a module so that we can import
-    all the other components as we wish.
-    
-    @author McKilla Gorilla
-*/
+
 export { 
     AppBanner,  
     EditToolbar, 
@@ -30,5 +25,5 @@ export {
     SongCard,
     RegisterScreen,
     SplashScreen,
-    Statusbar
-}
+    Statusbar, 
+ }
