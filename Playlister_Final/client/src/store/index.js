@@ -23,7 +23,8 @@ export const GlobalStoreActionType = {
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
     SET_SEARCH_MODE: "SET_SEARCH_MODE",
-    SET_HOME: "SET_HOME"
+    SET_HOME: "SET_HOME",
+    LOAD_USER: "LOAD_USER"
 }
 
 const tps = new jsTPS();
@@ -52,12 +53,6 @@ function GlobalStoreContextProvider(props) {
     const history = useHistory();
     console.log("inside useGlobalStore");
     console.log(history.location.pathname.split("playlist/"))
-    useEffect(() => {
-        let id = history.location.pathname.split("playlist/");
-        if(id.length > 1) {
-            store.setCurrentList(id[1]); 
-        } 
-    }, [])
     
     const { auth } = useContext(AuthContext);
     console.log("auth: " + auth);
@@ -245,6 +240,21 @@ function GlobalStoreContextProvider(props) {
                     currentCri: ""
                 });
             }
+            case GlobalStoreActionType.LOAD_USER: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: payload.pairsArray,
+                    currentList: store.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null,
+                    searchMode: "u",
+                    currentCri: payload.criteria
+                });
+            }
             default:
                 return store;
         }
@@ -252,7 +262,7 @@ function GlobalStoreContextProvider(props) {
 
     store.changeListName = function (id, newName) {
         async function asyncChangeListName(id) {
-            let response = await api.getPlaylistById(id);
+            let response = await api.getPlaylistById(id, auth.user.email);
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 playlist.name = newName;
@@ -294,7 +304,7 @@ function GlobalStoreContextProvider(props) {
     store.createNewList = async function (name, songs) {
         let newListName = "Untitled" + store.newListCounter;
         if(name !== "") {
-            newListName = name + "*";
+            newListName = "Copy of " + name ;
         }
         let userName = auth.user.firstName + " " + auth.user.lastName;
 
@@ -318,7 +328,10 @@ function GlobalStoreContextProvider(props) {
     store.loadIdNamePairs = function (criteria) {
         async function asyncLoadIdNamePairs() {
             let response;
-            if(store.searchMode === "h") {
+            if(auth.user.email === "guest" && store.searchMode === "h") {
+                response = await api.getAllPublishedPlaylistPairs();
+            }
+            else if(store.searchMode === "h") {
                 response = await api.getPlaylistPairs();
             } 
             else if(store.searchMode === "n") {
@@ -375,9 +388,28 @@ function GlobalStoreContextProvider(props) {
         asyncPublishList();
     }
 
+    store.loadUser = function(email, by) {
+        console.log(email + " " + by)
+        async function asyncLoadIdNamePairs() {
+            let response = await api.getPlaylistPairsByUser(by, email);
+            let pairsArray;
+            if (response.data.success) {
+                pairsArray = response.data.idNamePairs;
+            }
+            else {
+                pairsArray = [];
+            }
+            storeReducer({
+                type: GlobalStoreActionType.LOAD_USER,
+                payload: {criteria: by, pairsArray: pairsArray}
+            });
+        }
+        asyncLoadIdNamePairs();
+    }
+
     store.markListForDeletion = function (id) {
         async function getListToDelete(id) {
-            let response = await api.getPlaylistById(id);
+            let response = await api.getPlaylistById(id, auth.user.email);
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 storeReducer({
@@ -434,13 +466,15 @@ function GlobalStoreContextProvider(props) {
 
     store.setCurrentList = function (id) {
         async function asyncSetCurrentList(id) {
-            let response = await api.getPlaylistById(id);
+            let response = await api.getPlaylistById(id, auth.user.email);
             if (response.data.success) {
                 let playlist = response.data.playlist;
-
                 async function asyncLoadIdNamePairs() {
                     let response;
-                    if(store.searchMode === "h") {
+                    if(auth.user.email === "guest" && store.searchMode === "h") {
+                        response = await api.getAllPublishedPlaylistPairs();
+                    }
+                    else if(store.searchMode === "h") {
                         response = await api.getPlaylistPairs();
                     } 
                     else if(store.searchMode === "n") {
@@ -475,10 +509,44 @@ function GlobalStoreContextProvider(props) {
     }
     store.addCommentLikeDislikeListen = function(userName, comment, like, dislike, listen, id) {
         async function asyncAddComment() {
-            let response = await api.addCommentLikeDislikeListenById(userName, comment, like, dislike, listen, id);
+            let response = await api.addCommentLikeDislikeListenById(userName, comment, like, dislike, listen, id, auth.user.email);
             if (response.data.success) {
-                store.setCurrentList(id); 
-                //store.loadIdNamePairs();
+                async function asyncSetCurrentList(id) {
+                    let response = await api.getPlaylistById(id, auth.user.email);
+                    if (response.data.success) {
+                        let playlist = response.data.playlist;
+
+                        async function asyncLoadIdNamePairs() {
+                            let response;
+                            if(auth.user.email === "guest" && store.searchMode === "h") {
+                                response = await api.getAllPublishedPlaylistPairs();
+                            }
+                            else if(store.searchMode === "h") {
+                                response = await api.getPlaylistPairs();
+                            } 
+                            else if(store.searchMode === "n") {
+                                response = await api.getPlaylistPairsByName(store.currentCri, auth.user.email);
+                            } 
+                            else if(store.searchMode === "u") {
+                                response = await api.getPlaylistPairsByUser(store.currentCri, auth.user.email);
+                            }
+                            let pairsArray;
+                            if (response.data.success) {
+                                pairsArray = response.data.idNamePairs;
+                            }
+                            else {
+                                pairsArray = [];
+                            }
+                            storeReducer({
+                                type: GlobalStoreActionType.SET_CURRENT_LIST,
+                                payload: {pairsArray: pairsArray, playlist: playlist}
+                            });
+                        }
+                        asyncLoadIdNamePairs();
+                        window.localStorage.setItem('currentList', JSON.stringify(playlist));
+                    }
+                }
+                asyncSetCurrentList(id);
             }
         }
         asyncAddComment();
@@ -569,7 +637,10 @@ function GlobalStoreContextProvider(props) {
             if (response.data.success) {
                 async function asyncLoadIdNamePairs() {
                     let response;
-                    if(store.searchMode === "h") {
+                    if(auth.user.email === "guest" && store.searchMode === "h") {
+                        response = await api.getAllPublishedPlaylistPair();
+                    }
+                    else if(store.searchMode === "h") {
                         response = await api.getPlaylistPairs();
                     } 
                     else if(store.searchMode === "n") {

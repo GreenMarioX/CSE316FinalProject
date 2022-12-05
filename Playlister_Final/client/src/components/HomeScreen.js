@@ -11,12 +11,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import YoutubePlayer from './YoutubePlayer';
 import CommentListCard from './CommentListCard';
+import AuthContext from '../auth';
 
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const [value, setValue] = useState(0);
     const isMenuOpen = Boolean(anchorEl);
+    const { auth } = useContext(AuthContext);
 
     useEffect(() => {
         store.loadIdNamePairs(store.currentCri);
@@ -110,19 +112,25 @@ const HomeScreen = () => {
             </TabPanel>
         </Box>;
 
+    let homeUse;
+    if(auth.user.email !== "guest"){
+        homeUse =
+            <Button aria-label="home" id="home-button" style={{ color: "#000000" }} onClick={handleLoadHome}>
+            <HomeOutlinedIcon style={{ fontSize: 50 }}/>
+            </Button>;
+    }
+
     return (
         <Box id="homescreen">
             <Box id="homescreen-heading">
-                <Button aria-label="home" id="home-button" style={{ color: "#000000" }} onClick={handleLoadHome}>
-                    <HomeOutlinedIcon style={{ fontSize: 50 }}/>
-                </Button>
+                {homeUse}
                 <Button aria-label="all-list" id="all-list-button" style={{ color: "#000000" }} onClick={handleLoadListsByName}>
                     <GroupsOutlinedIcon style={{ fontSize: 50 }}/>
                 </Button>
                 <Button aria-label="users" id="users-button" style={{ color: "#000000" }} onClick={handleLoadListsByUser}>
                     <PersonOutlineOutlinedIcon style={{ fontSize: 50 }}/>
                 </Button>
-                <TextField id="outlined-basic" label="Search" variant="outlined" sx={{ ml: 20, height: '95%', width: 700}} onKeyPress={handleSearch}/> 
+                <TextField id="outlined-basic" label="Search" variant="outlined" defaultValue='' sx={{ ml: 20, height: '95%', width: 700}} onKeyPress={handleSearch}/> 
                 <Button size="small" edge="end" aria-label="sort by" aria-controls='primary-search-account-menu' aria-haspopup="true" onClick={handleMenuOpen} color="inherit" endIcon={<SortIcon/>} sx={{ ml: 10, fontSize: 20}}> 
                     SORT BY
                 </Button>

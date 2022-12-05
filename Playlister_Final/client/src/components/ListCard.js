@@ -11,12 +11,14 @@ import SongListCard from './SongListCard';
 import EditToolbar from './EditToolbar';
 import MUIDeleteModal from './MUIDeleteModal'
 import PublishedSongListCard from './PublishedSongListCard';
+import AuthContext from '../auth';
 
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair } = props;
+    const { auth } = useContext(AuthContext);
 
     function toggleEdit() {
         let newActive = !editActive;
@@ -80,13 +82,48 @@ function ListCard(props) {
         setText(event.target.value);
     }
 
+    function handleLoadUser(event) {
+        console.log("loaduser")
+        event.stopPropagation();
+        store.loadUser(auth.user.email, idNamePair.by);
+    }
+
+    let dislikeButton;
+    let likeButton;
+    let duplicateButton;
+    let deleteButton;
+    if(!auth.guest) {
+        likeButton =
+        <Button aria-label="like" id="like-button" sx={{ color: "#000000", ml: 40, mr: 5}} startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 1)}>
+            {idNamePair.likes}
+        </Button>;
+
+        dislikeButton =
+        <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 2)}>
+            {idNamePair.dislikes}
+        </Button>;
+
+        duplicateButton =
+        <Button onClick={handleDupe} aria-label='duplicate' variant="contained"> 
+            <FileCopyIcon style={{fontSize:'16pt'}} />
+        </Button>;
+
+    }
+
+    if(auth.user.email === idNamePair.owner && !auth.guest) {
+        deleteButton = 
+        <Button onClick={(event) => {handleDeleteList(event, idNamePair._id)}} aria-label='delete' variant="contained"> 
+            <DeleteIcon style={{fontSize:'16pt'}} />
+        </Button>;
+    }
+
     let cardElement;
     if(idNamePair.publishDate === "N/A") {
         cardElement =
         <Paper id={idNamePair._id} sx={{ margin: '10px', width: '95%', borderRadius: '5px' }}> 
             <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: '#C791FD', "&:hover":{ bgcolor: '#C791FD' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onDoubleClick={handleToggleEdit}>
                 <Box sx={{ pr: 10, pl: 1, fontSize: 30, fontWeight: 'bold', width: '100%' }}>{idNamePair.name}</Box>
-                <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link href="#">{idNamePair.by}</Link>}</Box>
+                <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link component='button' onClick={handleLoadUser} sx={{ fontSize: 20 }}>{idNamePair.by} </Link>} </Box>
                 <Box sx={{ fontSize: 15, width: '25%'}}>Published: {idNamePair.publishDate}</Box>
                 <Box sx={{ fontSize: 15, width: '15%'}}>Listens: {idNamePair.listens}</Box>
             </ListItem>
@@ -114,13 +151,9 @@ function ListCard(props) {
         <Paper id={idNamePair._id} sx={{ margin: '10px', width: '95%', borderRadius: '5px' }}> 
             <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: '#FAAA31', "&:hover":{ bgcolor: '#FAAA31' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button>
                 <Box sx={{ pr: 10, pl: 1, fontSize: 30, fontWeight: 'bold' }}>{idNamePair.name}</Box>
-                <Button aria-label="like" id="like-button" sx={{ color: "#000000", ml: 40, mr: 5}} startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 1)}>
-                    {idNamePair.likes}
-                </Button>
-                <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 2)}>
-                    {idNamePair.dislikes}
-                </Button>
-                <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link href="#" >{idNamePair.by}</Link>}</Box>
+                {likeButton}
+                {dislikeButton}
+                <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link component='button' onClick={handleLoadUser} sx={{ fontSize: 20 }}>{idNamePair.by}</Link>}</Box>
                 <Box sx={{ fontSize: 15, width: '25%'}}>Published: {idNamePair.publishDate}</Box>
                 <Box sx={{ fontSize: 15, width: '15%'}}>Listens: {idNamePair.listens}</Box>
             </ListItem>
@@ -129,12 +162,8 @@ function ListCard(props) {
                 <AccordionDetails sx={{ maxHeight: 400, overflowY: 'auto' }}>
                     <PublishedSongListCard songs={idNamePair.songs}></PublishedSongListCard>
                     <MUIDeleteModal/>
-                    <Button onClick={(event) => {handleDeleteList(event, idNamePair._id)}} aria-label='delete' variant="contained">
-                        <DeleteIcon style={{fontSize:'16pt'}}/>
-                    </Button>
-                    <Button onClick={handleDupe} aria-label='duplicate' variant="contained">
-                        <FileCopyIcon style={{fontSize:'16pt'}}/>
-                    </Button>
+                    {deleteButton}
+                    {duplicateButton}
                 </AccordionDetails>
             </Accordion>
         </Paper>;

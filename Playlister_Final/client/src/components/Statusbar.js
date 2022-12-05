@@ -23,8 +23,11 @@ function Statusbar() {
         content = 
             <Button aria-label="add" id="add-button" style={{ color: "#000000" }} onClick={handleCreateNewList}>
                 <AddIcon style={{ fontSize: 50 }}/>
-                <Typography variant="h4" style={{ fontSize: 20 }}> {store.currentList.name} </Typography>;
+                <Typography variant="h4" style={{ fontSize: 20 }}> {store.currentList.name} </Typography>
             </Button>
+    }
+    if(auth.guest) {
+        content="";
     }
 
     return (
