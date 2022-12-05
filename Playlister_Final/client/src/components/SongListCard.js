@@ -39,7 +39,7 @@ function SongListCard() {
          </Box>            
     } 
     else {
-        display =<div style={{fontSize: 40}}>You do not have permission to access this!</div>
+        display = <Box> </Box>
     }
 
     return (

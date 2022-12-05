@@ -10,7 +10,8 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import SortIcon from '@mui/icons-material/Sort';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-
+import YoutubePlayer from './YoutubePlayer';
+import CommentListCard from './CommentListCard';
 import AuthContext from '../auth';
 /*
     This React component lists all the top5 lists in the UI.
@@ -21,6 +22,7 @@ const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
+    const [value, setValue] = useState(0);
 
     useEffect(() => {
         store.loadIdNamePairs();
@@ -50,15 +52,8 @@ const HomeScreen = () => {
             </List>;
     }
 
-    let playerCommentTab =
-        <Tabs>
-            <Tab label="Player">
-
-            </Tab>
-            <Tab label="Comments">
-
-            </Tab>
-        </Tabs>;
+    
+    
         
     const menu = (
         <Menu
@@ -83,6 +78,59 @@ const HomeScreen = () => {
             <MenuItem onClick={handleMenuClose}>Dislikes &#40;High - Low&#41;</MenuItem>
         </Menu>
     );
+
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && (
+                <Box sx={{ p: 3 }}>
+                    {children}
+                </Box>
+                )}
+            </div>
+        );
+    }
+
+    TabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.number.isRequired,
+        value: PropTypes.number.isRequired,
+    };
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        };
+    }
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    let playerCommentTab =
+        <Box sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="Player" sx={{fontWeight: 'bold', color: 'black'}} {...a11yProps(0)} />
+            <Tab label="Comments" sx={{fontWeight: 'bold', color: 'black'}} {...a11yProps(1)} />
+            </Tabs>
+            </Box> 
+            <TabPanel value={value} index={0}>
+                <YoutubePlayer/>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                <CommentListCard/>
+            </TabPanel>
+        </Box>;
 
     return (
         <div id="homescreen">
@@ -112,7 +160,7 @@ const HomeScreen = () => {
                     id="outlined-basic" 
                     label="Search" 
                     variant="outlined" 
-                    sx={{ ml: 10, width: 700}}
+                    sx={{ ml: 10, height: '95%', width: 700}}
                 />  
                 <Button
                     size="large"

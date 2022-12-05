@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Paper } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Paper, Link } from '@mui/material';
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
@@ -84,8 +84,7 @@ function ListCard(props) {
             <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}}/>}>
                 0
             </Button>
-            <Box sx={{ pr: 1, pl: 1, fontSize: 20, mr: 40}}>By: </Box>
-            <Box sx={{ pr: 1, pl: 1, fontSize: 20, mx: 2.5}}>Published: </Box>
+            <Box sx={{ pr: 1, pl: 1, fontSize: 20, mr: 40}}>By: {<Link href="#">{idNamePair.owner}</Link>}</Box>           <Box sx={{ pr: 1, pl: 1, fontSize: 20, mx: 2.5}}>Published: </Box>
             <Box sx={{ pr: 1, pl: 1, fontSize: 20, mr: 20}}>Listens:  </Box>
         </ListItem>
         <Accordion id={idNamePair._id} sx={{ bgcolor: '#ADD8E6', '&:before': {display: 'none'} }} elevation={0} disableGutters>
