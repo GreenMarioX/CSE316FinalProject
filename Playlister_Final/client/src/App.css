@@ -209,6 +209,7 @@ body {
 #playlist-selector-list {
   width: 60%;
   height: 100%;
+  overflow-y: auto;
 }
 
 #player-comment-tab {
