@@ -30,7 +30,13 @@ export default function AppBanner() {
 
     const handleLogout = () => {
         handleMenuClose();
+        store.closeCurrentList();
         auth.logoutUser();
+    }
+
+    const handleGuestLogIn = () => {
+        handleMenuClose();
+        auth.loginGuest();
     }
 
     const menuId = 'primary-search-account-menu';
@@ -52,6 +58,7 @@ export default function AppBanner() {
         >
             <MenuItem onClick={handleMenuClose}><Link to='/login/'>Login</Link></MenuItem>
             <MenuItem onClick={handleMenuClose}><Link to='/register/'>Create New Account</Link></MenuItem>
+            <MenuItem onClick={handleGuestLogIn}><Link to='/'>Continue as Guest</Link></MenuItem>
         </Menu>
     );
     const loggedInMenu = 
@@ -77,9 +84,6 @@ export default function AppBanner() {
     let menu = loggedOutMenu;
     if (auth.loggedIn) {
         menu = loggedInMenu;
-        if (store.currentList) {
-            editToolbar = <EditToolbar />;
-        }
     }
     
     function getAccountMenu(loggedIn) {
@@ -93,14 +97,15 @@ export default function AppBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" style={{ background: '#bfbfbf' }}>
                 <Toolbar>
                     <Typography                        
-                        variant="h4"
+                        variant="h2"
                         noWrap
                         component="div"
                         color="red"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
+                        sx={{ display: { xs: 'none', sm: 'block' } }}   
+                        style={{ color:'red', fontFamily: 'Tangerine', fontSize: 40 }}                     
                     >
                         {/* <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link> */}
                         Playlister
@@ -115,6 +120,7 @@ export default function AppBanner() {
                             aria-haspopup="true"
                             onClick={handleProfileMenuOpen}
                             color="inherit"
+                            style={{ backgroundColor: 'purple' }}
                         >
                             { getAccountMenu(auth.loggedIn) }
                         </IconButton>
