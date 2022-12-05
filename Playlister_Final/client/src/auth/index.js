@@ -10,7 +10,8 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    LOGIN_GUEST: "LOGIN_GUEST",
 }
 
 function AuthContextProvider(props) {
@@ -49,6 +50,12 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: payload.user,
                     loggedIn: true
+                })
+            }
+            case AuthActionType.LOGIN_GUEST: {
+                return setAuth({
+                    user: {firstName: "G", lastName: "t", email: "guest"},
+                    loggedIn: true,
                 })
             }
             default:
@@ -115,6 +122,14 @@ function AuthContextProvider(props) {
         )
     }
 
+    auth.loginGuest = async function () {
+        authReducer({
+            type: AuthActionType.LOGIN_GUEST,
+            payload: {}            
+        });
+        history.push("/");
+    }
+
     auth.logoutUser = async function() {
         const response = await api.logoutUser();
         if (response.status === 200) {
@@ -136,6 +151,13 @@ function AuthContextProvider(props) {
         return initials;
     }
 
+    auth.toggleAccErrModal = function (bool, msg) {
+        authReducer({
+            type: AuthActionType.ACC_ERR_MODAL,
+            payload : [bool, msg]
+        })
+    }
+    
     return (
         <AuthContext.Provider value={{
             auth
