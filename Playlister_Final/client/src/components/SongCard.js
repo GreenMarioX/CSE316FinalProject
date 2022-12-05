@@ -58,6 +58,7 @@ function SongCard(props) {
             onDrop={handleDrop}
             draggable="true"
             onClick={handleClick}
+            style={{outline: '1px solid grey'}}
         >
             {index + 1}.
             <a

@@ -50,6 +50,16 @@ const HomeScreen = () => {
             </List>;
     }
 
+    let playerCommentTab =
+        <Tabs>
+            <Tab label="Player">
+
+            </Tab>
+            <Tab label="Comments">
+
+            </Tab>
+        </Tabs>;
+        
     const menu = (
         <Menu
             anchorEl={anchorEl}
@@ -124,10 +134,7 @@ const HomeScreen = () => {
                     {listCard}
                 </div>
                 <div id="player-comment-tab">
-                    <Tabs>
-                        <Tab label="Player"/>
-                        <Tab label="Comments"/>
-                    </Tabs>
+                    {playerCommentTab}
                 </div>
             </div>
         </div>
