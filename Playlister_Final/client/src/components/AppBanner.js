@@ -99,9 +99,11 @@ export default function AppBanner() {
                         variant="h4"
                         noWrap
                         component="div"
+                        color="red"
                         sx={{ display: { xs: 'none', sm: 'block' } }}                        
                     >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
+                        {/* <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link> */}
+                        Playlister
                     </Typography>
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

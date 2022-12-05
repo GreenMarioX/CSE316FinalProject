@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&display=swap');
 :root {
   /* 
         FIRST WE'LL DEFINE OUR SWATCHES, i.e. THE COMPLEMENTARY
@@ -6,8 +7,8 @@
     
         @author McKilla Gorilla
     */
-  --swatch-foundation: #87f18c;
-  --swatch-primary: #39f142;
+  --swatch-foundation: #eeeedd;
+  --swatch-primary: #e6e6e6;
   --swatch-complement: #e1e4cb;
   --swatch-contrast: #111111;
   --swatch-accent: #669966;
@@ -24,10 +25,10 @@ body {
   background-color: var(--swatch-primary);
   font-family: "Lexend Exa";
   position: absolute;
-  width: 80%;
-  left: 10%;
-  height: 90%;
-  top: 5%;
+  width: 95%;
+  left: 2.5%;
+  height: 95%;
+  top: 2.5%;
 }
 
 #app-root {
@@ -53,15 +54,15 @@ body {
   border-style: solid;
   border-radius: 10px;
 }
+
 #splash-screen {
-  background-image: linear-gradient(to bottom, #0bf76d, #7cf0c0);
+  background-image: linear-gradient(to bottom, #129880, #2ac38d, #1dcf4f);
   color: white;
   font-size: 5vw;
   border-color: black;
-  border-width: 2px;
+  border-width: 0px;
   border-style: solid;
   border-radius: 10px;
-  padding-left: 10%;
   padding-top: 5%;
   padding-bottom: 5%;
   height:70%;
@@ -112,15 +113,49 @@ body {
   background-color: var(--swatch-accent);
 }
 
+#homescreen {
+  position: absolute;
+  left: 0%;
+  top: 10%;
+  width: 100%;
+  height: 80%;
+  background-color: var(--swatch-primary);
+}
+
+#homescreen-sections {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  margin-top: 4.5%;
+  margin-bottom: 5%;
+  height: 87.5%;
+  width: 100%;
+}
+
+#homescreen-heading {
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  width: 100%;
+  height: 10%;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: left;
+  font-size: 24pt;
+  font-weight: bold;
+  display: flex;
+  align-items: left;
+  justify-content: left;
+}
+
 #playlister-statusbar {
   position: sticky;
   left: 0%;
   top: 90%;
   width: 100%;
   height: 10%;
-  background-color: rgb(36, 168, 69);
+  background-color: #bfbfbf;
   color: white;
-  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 36pt;
@@ -171,6 +206,16 @@ body {
   pointer-events: none;
 }
 
+#playlist-selector-list {
+  width: 60%;
+  height: 100%;
+}
+
+#player-comment-tab {
+  width: 40%;
+  height: 100%;
+}
+
 .unselected-list-card:hover {
   cursor: pointer;
   background-color: var(--swatch-contrast);
@@ -188,7 +233,7 @@ body {
 
 .list-card-button {
   float: right;
-  transform: scale(2);
+  font-size: 24pt;
 }
 
 #workspace-home,
@@ -321,6 +366,25 @@ span {
   border-bottom: dotted;
 }
 
+.modal-root {
+  position: relative;
+  max-width: 1200vw;
+  max-height: 600vh;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  background: var(--swatch-complement);
+  cursor: default;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 5px 10px #888888;
+}
+
+.modal-root > * {
+  padding: 1rem;
+}
+
 .modal-header,
 .modal-close {
   font-size: 1.5rem;
@@ -328,6 +392,85 @@ span {
 
 .modal p + p {
   margin-top: 1rem;
+}
+
+.modal-north {
+  font-size:32pt;
+  font-weight: bold;
+  background-color: #669966;
+  color:white;
+}
+
+.modal-center {
+  display: grid;
+  grid-template-columns: 30% 65%;
+  grid-template-rows: 33% 33% 33%;
+  gap: 10px 20px;
+  font-size: 32pt;
+}
+
+.modal-south {
+  display:flex;
+  flex-direction: row;
+  background-color: lightgray;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-center-content {
+  grid-column: 1 / 3;
+  grid-row: 1 / 4;
+}
+
+.modal-prompt {  
+  font-size:28pt;
+  font-weight: bold;
+}
+
+.modal-textfield {
+  font-size:28pt;
+}
+
+.modal-button {
+  margin:5px;
+}
+
+#title-prompt {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+#edit-song-modal-title-textfield {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+#artist-prompt {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+#edit-song-modal-artist-textfield {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+#you-tube-id-prompt {
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
+}
+
+#edit-song-modal-youTubeId-textfield {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+}
+
+.confirm-cancel-box {
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-control {

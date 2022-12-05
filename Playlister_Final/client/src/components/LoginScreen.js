@@ -45,8 +45,8 @@ export default function LoginScreen() {
             <Grid
                 item
                 xs={false}
-                sm={4}
-                md={7}
+                sm={false}
+                md={false}
                 sx={{
                     backgroundImage: 'url(https://source.unsplash.com/random)',
                     backgroundRepeat: 'no-repeat',
@@ -56,7 +56,7 @@ export default function LoginScreen() {
                     backgroundPosition: 'center',
                 }}
             />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+            <Grid item xs={12} sm={12} md={12} component={Paper} elevation={6} square>
                 <Box
                     sx={{
                         my: 8,
@@ -93,10 +93,7 @@ export default function LoginScreen() {
                             id="password"
                             autoComplete="current-password"
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
+                        
                         <Button
                             type="submit"
                             fullWidth
@@ -108,7 +105,7 @@ export default function LoginScreen() {
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
-                                    Forgot password?
+                                    
                                 </Link>
                             </Grid>
                             <Grid item>
@@ -117,7 +114,7 @@ export default function LoginScreen() {
                                 </Link>
                             </Grid>
                         </Grid>
-                        <Copyright sx={{ mt: 5 }} />
+                        
                     </Box>
                 </Box>
             </Grid>
