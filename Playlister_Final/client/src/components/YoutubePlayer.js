@@ -30,7 +30,7 @@ const YoutubePlayer = () => {
         event.target.pauseVideo();
     }
 
-    function incrementSong() {
+    function incSong() {
         if(currentSong < store.currentList.songs.length-1) {
             let i=currentSong+1;
             setCurrentSong(i);
@@ -39,12 +39,11 @@ const YoutubePlayer = () => {
 
     function onPlayerStateChange(event) {
         let playerStatus = event.target.getPlayerState();
-
         if (playerStatus === -1) {
             console.log("-1 Video unstarted");
         } else if (playerStatus === 0) {
             console.log("0 Video ended");
-            incrementSong();
+            incSong();
         } else if (playerStatus === 1) {
             console.log("1 Video played");
         } else if (playerStatus === 2) {
@@ -56,7 +55,7 @@ const YoutubePlayer = () => {
         }
     }
 
-    function decrementSong() {
+    function decSong() {
         if(currentSong >= 1) {
             let i = currentSong - 1;
             setCurrentSong(i);
@@ -73,37 +72,23 @@ const YoutubePlayer = () => {
 
     return(
         <div>
-            <YouTube
-                key={playlist[currentSong]}
-                videoId={playlist[currentSong]}
-                opts = {{
-                    height: 290,
-                    width: '100%',
-                    playerVars: {
-                        playsinline: 1,
-                        autoplay: 1,
-                        origin: "https://www.youtube.com"
-                    }
-                }}
-                onReady={onPlayerReady}
-                onStateChange={onPlayerStateChange}
-            />
+            <YouTube key={playlist[currentSong]} videoId={playlist[currentSong]} opts = {{height: 290, width: '100%', playerVars: {playsinline: 1, autoplay: 1, origin: "https://www.youtube.com"}}} onReady={onPlayerReady} onStateChange={onPlayerStateChange}/>
             <Paper id="player-info" sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', bgcolor: '#ADD8E6' }}>
                 <Typography sx={{ pl: 1, pt: 1, fontWeight: 'bold' }}>Playlist:&#32;{playlistName}</Typography> 
                 <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Song&#32;#:&#32;{currentSong}</Typography>  
                 <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Title:&#32;{title}</Typography>  
                 <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Artist:&#32;{artist}</Typography>
                 <Box display="flex" alignItems="center" justifyContent="center"> 
-                    <IconButton id='prev-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={decrementSong} variant="contained">
+                    <IconButton id='prev-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={decSong} variant="contained">
                         <FastRewindIcon sx={{ fontSize: 30 }}/>
                     </IconButton>
-                    <IconButton id='stop-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={handleStop}variant="contained">
+                    <IconButton id='stop-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={handleStop} variant="contained">
                             <StopIcon sx={{ fontSize: 30 }}/>
                     </IconButton>
                     <IconButton id='play-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={handlePlay} variant="contained">
                             <PlayArrowIcon sx={{ fontSize: 30 }}/>
                     </IconButton>
-                    <IconButton id='next-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={incrementSong} variant="contained">
+                    <IconButton id='next-song-button' sx={{bgColor: 'transparent', mx: 1}} onClick={incSong} variant="contained">
                             <FastForwardIcon sx={{ fontSize: 30 }}/>
                     </IconButton>
                 </Box>
