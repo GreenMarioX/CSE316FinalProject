@@ -76,16 +76,17 @@ function ListCard(props) {
 
     let cardElement =
     <Paper id={idNamePair._id} sx={{ margin: '10px', width: '95%', borderRadius: '5px' }}> 
-        <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: 85, p: 1, flexWrap: 'wrap', bgcolor: '#ADD8E6', "&:hover":{ bgcolor: '#ADD8E6' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onDoubleClick={handleToggleEdit}>
+        <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: '#ADD8E6', "&:hover":{ bgcolor: '#ADD8E6' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onDoubleClick={handleToggleEdit}>
             <Box sx={{ pr: 10, pl: 1, fontWeight: 'bold', fontSize: 30 }}>{idNamePair.name}</Box>
             <Button aria-label="like"id="like-button"sx={{ color: "#000000", ml: 40, mr: 5}}startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />}>
-                0
+            {idNamePair.likes}
             </Button>
             <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}}/>}>
-                0
+            {idNamePair.dislikes}
             </Button>
-            <Box sx={{ pr: 1, pl: 1, fontSize: 20, mr: 40}}>By: {<Link href="#">{idNamePair.owner}</Link>}</Box>           <Box sx={{ pr: 1, pl: 1, fontSize: 20, mx: 2.5}}>Published: </Box>
-            <Box sx={{ pr: 1, pl: 1, fontSize: 20, mr: 20}}>Listens:  </Box>
+            <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link href="#">{idNamePair.by}</Link>}</Box>
+            <Box sx={{ fontSize: 20, width: '20%'}}>Published: {idNamePair.publishDate}</Box>
+            <Box sx={{ fontSize: 20, width: '15%'}}>Listens: {idNamePair.listens}</Box>
         </ListItem>
         <Accordion id={idNamePair._id} sx={{ bgcolor: '#ADD8E6', '&:before': {display: 'none'} }} elevation={0} disableGutters>
             <AccordionSummary 
