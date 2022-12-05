@@ -7,8 +7,14 @@ export default function SplashScreen() {
                 Playlister
             </Typography>
             <Typography paragraph={true} align="center">
+                Created by: Steven Tung
+            </Typography>
+            <Typography style={{fontSize: 100}} align="center">
+                WELCOME!
+            </Typography>
+            <Typography paragraph={true} align="center">
                 Create playlists and share your favorite songs
-                with others
+                with others.
             </Typography>
         </Typography>
 
