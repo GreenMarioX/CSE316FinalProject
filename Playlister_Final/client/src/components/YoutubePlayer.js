@@ -73,9 +73,9 @@ const YoutubePlayer = () => {
     return(
         <div>
             <YouTube key={playlist[currentSong]} videoId={playlist[currentSong]} opts = {{height: 290, width: '100%', playerVars: {playsinline: 1, autoplay: 1, origin: "https://www.youtube.com"}}} onReady={onPlayerReady} onStateChange={onPlayerStateChange}/>
-            <Paper id="player-info" sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', bgcolor: '#ADD8E6' }}>
+            <Paper id="player-info" sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', bgcolor: '#FF99FF' }}>
                 <Typography sx={{ pl: 1, pt: 1, fontWeight: 'bold' }}>Playlist:&#32;{playlistName}</Typography> 
-                <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Song&#32;#:&#32;{currentSong}</Typography>  
+                <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Song&#32;#:&#32;{currentSong + 1}</Typography>  
                 <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Title:&#32;{title}</Typography>  
                 <Typography sx={{ pl: 1, fontWeight: 'bold' }}>Artist:&#32;{artist}</Typography>
                 <Box display="flex" alignItems="center" justifyContent="center"> 

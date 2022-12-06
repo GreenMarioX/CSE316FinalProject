@@ -12,8 +12,7 @@ function CommentListCard() {
     function handleEnter(event) {
         if(event.key === "Enter") {
             let comment = event.target.value;
-            let userName = auth.user.firstName + " " + auth.user.lastName;
-            store.addCommentLikeDislikeListen(userName, comment, false, false, false, store.currentList._id);
+            store.addCommentLikeDislikeListen(auth.user.userName, comment, false, false, false, store.currentList._id);
         }
     }
 

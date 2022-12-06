@@ -18,10 +18,10 @@ export const createPlaylist = (newListName, newSongs, newComments, userEmail, us
         likedDislikedUsers: [] 
     })
 }
-export const getPlaylists = (email) => api.get(`/playlists/${email}`)
+export const getPlaylists = (email, sortType) => api.get(`/playlists/${email}/${sortType}`)
 export const deletePlaylistById = (id) => api.delete(`/playlist/${id}`)
 export const getPlaylistById = (id, email) => api.get(`/playlist/${id}/${email}`)
-export const getPlaylistPairs = () => api.get(`/playlistpairs/`)
+export const getPlaylistPairs = (sortType) => api.get(`/playlistpairs/${sortType}`)
 export const updatePlaylistById = (id, playlist) => {
     return api.put(`/playlist/${id}`, {
         playlist : playlist
@@ -37,9 +37,9 @@ export const addCommentLikeDislikeListenById = (userName, comment, like, dislike
     })
 }
 export const publishPlaylistById = (id) => {return api.put(`/playlist/publish/${id}`)}
-export const getPlaylistPairsByName = (criteria, email) => api.get(`/playlistpairs/name/${criteria}/${email}`)
-export const getPlaylistPairsByUser = (criteria, email) => api.get(`/playlistpairs/user/${criteria}/${email}`)
-export const getAllPublishedPlaylistPairs = () => api.get(`/playlistpairs/published/`)
+export const getPlaylistPairsByName = (criteria, email, sortType) => api.get(`/playlistpairs/name/${criteria}/${email}/${sortType}`)
+export const getPlaylistPairsByUser = (criteria, email, sortType) => api.get(`/playlistpairs/user/${criteria}/${email}/${sortType}`)
+export const getAllPublishedPlaylistPairs = (sortType) => api.get(`/playlistpairs/published/${sortType}`)
 
 const apis = {
     createPlaylist,

@@ -21,7 +21,7 @@ const HomeScreen = () => {
     const { auth } = useContext(AuthContext);
 
     useEffect(() => {
-        store.loadIdNamePairs(store.currentCri);
+        store.loadIdNamePairs(store.currentCri, store.sortType);
     }, [])
 
     const handleMenuOpen = (event) => {
@@ -35,11 +35,13 @@ const HomeScreen = () => {
     const menu = (
         <Menu anchorEl={anchorEl} anchorOrigin={{ vertical: 'top', horizontal: 'right',}} id='primary-search-account-menu' keepMounted
             transformOrigin={{vertical: 'top', horizontal: 'right',}} open={isMenuOpen}onClose={handleMenuClose}>
-            <MenuItem onClick={handleMenuClose}>Name &#91;A - Z&#93;</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Publish Date &#91;Newest&#93;</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Listens &#91;High - Low&#93;</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Likes &#91;High - Low&#93;</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Dislikes &#91;High - Low&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("name")}}>Name &#91;A - Z&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("publish")}}>Publish Date &#91;Newest&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("listen")}}>Listens &#91;High - Low&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("like")}}>Likes &#91;High - Low&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("dislike")}}>Dislikes &#91;High - Low&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("creation")}}>Creation Date &#91;Old - New&#93;</MenuItem>
+            <MenuItem onClick={() => {handleSort("edit")}}>Last Edit Date &#91;Old - New&#93;</MenuItem>
         </Menu>
     );
 
@@ -59,7 +61,12 @@ const HomeScreen = () => {
             </Box>
         );
     }
-      
+    
+    function handleSort(type) {
+        handleMenuClose();
+        store.sort(type);
+    }
+
     TabPanel.propTypes = {
         children: PropTypes.node,
         index: PropTypes.number.isRequired,
@@ -92,7 +99,7 @@ const HomeScreen = () => {
     function handleSearch(event) {
         if(event.key === "Enter") {
             let criteria = event.target.value;
-            store.loadIdNamePairs(criteria);
+            store.loadIdNamePairs(criteria, store.sortType);
         }
     }
       
@@ -112,10 +119,13 @@ const HomeScreen = () => {
             </TabPanel>
         </Box>;
 
-    let homeUse;
-    if(auth.user.email !== "guest"){
+    let homeUse = 
+    <Button aria-label="home" id="home-button" style={{ color: "#000000" }} onClick={handleLoadHome}>
+        <HomeOutlinedIcon style={{ fontSize: 50 }}/>
+    </Button>;
+    if(auth.user.email == "guest"){
         homeUse =
-            <Button aria-label="home" id="home-button" style={{ color: "#000000" }} onClick={handleLoadHome}>
+            <Button aria-label="home" id="home-button" style={{ color: "#000000" }} onClick={handleLoadHome} disabled>
             <HomeOutlinedIcon style={{ fontSize: 50 }}/>
             </Button>;
     }

@@ -109,7 +109,7 @@ getPlaylistPairs = async (req, res) => {
     console.log("getPlaylistPairs");
     await User.findOne({ _id: req.userId }, (err, user) => {
         console.log("find user with id " + req.userId);
-        async function asyncFindList(email) {
+        async function asyncFindList(email, sort) {
             console.log("find all Playlists owned by " + email);
             await Playlist.find({ ownerEmail: email }, (err, playlists) => {
                 console.log("found Playlists: " + JSON.stringify(playlists));
@@ -124,6 +124,27 @@ getPlaylistPairs = async (req, res) => {
                 }
                 else {
                     console.log("Send the Playlist pairs");
+                    if(sort === "name") {
+                        playlists.sort((a, b) => a.name.localeCompare(b.name));
+                    }
+                    else if(sort === "publish") {
+                        playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                    }
+                    else if(sort === "listen") {
+                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                    }
+                    else if(sort === "like") {
+                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                    }
+                    else if(sort === "dislike") {
+                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                    }
+                    else if(sort === "creation") {
+                        playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
+                    }
+                    else if(sort === "edit") {
+                        playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
+                    }
                     let pairs = [];
                     for (let key in playlists) {
                         let list = playlists[key];
@@ -145,45 +166,80 @@ getPlaylistPairs = async (req, res) => {
                 }
             }).catch(err => console.log(err))
         }
-        asyncFindList(user.email);
+        asyncFindList(user.email, req.params.sort);
     }).catch(err => console.log(err))
 }
+
 getPlaylists = async (req, res) => {
-    await Playlist.find({}, (err, playlists) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err })
-        }
-        if (!playlists.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Playlists not found` })
-        }
-        else {
-            console.log("Send the Playlist pairs");
-            // PUT ALL THE LISTS INTO ID, NAME PAIRS
-            let pairs = [];
-            for (let key in playlists) {
-                let list = playlists[key];
-                if (list.publishDate !== "N/A" || list.ownerEmail === req.params.email) {
-                    let pair = {
-                        _id: list._id,
-                        name: list.name,
-                        owner: list.ownerEmail,
-                        likes: list.likes,
-                        dislikes: list.dislikes,
-                        songs: list.songs,
-                        by: list.by,
-                        publishDate: list.publishDate,
-                        listens: list.listens,
-                        likedDislikedUsers: list.likedDislikedUsers
-                    };
-                    pairs.push(pair);
-                }
+    async function asyncGetPlaylists(sort) { 
+        await Playlist.find({}, (err, playlists) => {
+            if (err) {
+                return res.status(400).json({ success: false, error: err })
             }
-            return res.status(200).json({ success: true, idNamePairs: pairs })
-        }
-    }).catch(err => console.log(err))
+            if (!playlists.length) {
+                return res
+                    .status(404)
+                    .json({ success: false, error: `Playlists not found` })
+            }
+            else {
+                console.log("Send the Playlist pairs");
+                // PUT ALL THE LISTS INTO ID, NAME PAIRS
+                console.log(playlists[0].listens)
+                if(sort === "name") {
+                    playlists.sort((a, b) => a.name.localeCompare(b.name));
+                    console.log("sort by name")
+                }
+                else if(sort === "publish") {
+                    playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                    console.log("sort by pub")
+                }
+                else if(sort === "listen") {
+                    playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                    console.log("sort by lis")
+                }
+                else if(sort === "like") {
+                    playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                    console.log("sort by like")
+                }
+                else if(sort === "dislike") {
+                    playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                    console.log("sort by dislike")
+                }
+                else if(sort === "creation") {
+                    playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
+                    console.log("sort by create")
+                }
+                else if(sort === "edit") {
+                    playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
+                    console.log("sort by edit")
+                }
+
+                let pairs = [];
+                for (let key in playlists) {
+                    let list = playlists[key];
+                    if (list.publishDate !== "N/A" || list.ownerEmail === req.params.email) {
+                        let pair = {
+                            _id: list._id,
+                            name: list.name,
+                            owner: list.ownerEmail,
+                            likes: list.likes,
+                            dislikes: list.dislikes,
+                            songs: list.songs,
+                            by: list.by,
+                            publishDate: list.publishDate,
+                            listens: list.listens,
+                            likedDislikedUsers: list.likedDislikedUsers
+                        };
+                        pairs.push(pair);
+                    }
+                }
+                return res.status(200).json({ success: true, idNamePairs: pairs })
+            }
+        }).catch(err => console.log(err))
+    }
+    asyncGetPlaylists(req.params.sort);
 }
+
 updatePlaylist = async (req, res) => {
     const body = req.body
     console.log("updatePlaylist: " + JSON.stringify(body));
@@ -213,25 +269,27 @@ updatePlaylist = async (req, res) => {
                     console.log("correct user!");
                     console.log("req.body.name: " + req.body.name);
 
-                    list.name = body.playlist.name;
-                    list.songs = body.playlist.songs;
-                    list
-                        .save()
-                        .then(() => {
-                            console.log("SUCCESS!!!");
-                            return res.status(200).json({
-                                success: true,
-                                id: list._id,
-                                message: 'Playlist updated!',
+                    if(list.publishDate === "N/A") {
+                        list.name = body.playlist.name;
+                        list.songs = body.playlist.songs;
+                        list
+                            .save()
+                            .then(() => {
+                                console.log("SUCCESS!!!");
+                                return res.status(200).json({
+                                    success: true,
+                                    id: list._id,
+                                    message: 'Playlist updated!',
+                                })
                             })
-                        })
-                        .catch(error => {
-                            console.log("FAILURE: " + JSON.stringify(error));
-                            return res.status(404).json({
-                                error,
-                                message: 'Playlist not updated!',
+                            .catch(error => {
+                                console.log("FAILURE: " + JSON.stringify(error));
+                                return res.status(404).json({
+                                    error,
+                                    message: 'Playlist not updated!',
+                                })
                             })
-                        })
+                        }
                 }
                 else {
                     console.log("incorrect user!");
@@ -345,7 +403,7 @@ publishPlaylistById = async (req, res) => {
 
 getAllPublishedPlaylistPairs = async (req, res) => {
     console.log("getAllPublishedPlaylistPairs");
-        async function asyncFindList() {
+        async function asyncFindList(sort) {
             console.log("find all published Playlists");
             await Playlist.find({publishDate: {$not: /N\/A/}}, (err, playlists) => {
                 console.log("found Playlists: " + JSON.stringify(playlists));
@@ -360,7 +418,27 @@ getAllPublishedPlaylistPairs = async (req, res) => {
                 }
                 else {
                     console.log("Send the Playlist pairs");
-                    // PUT ALL THE LISTS INTO ID, NAME PAIRS
+                    if(sort === "name") {
+                        playlists.sort((a, b) => a.name.localeCompare(b.name));
+                    }
+                    else if(sort === "publish") {
+                        playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                    }
+                    else if(sort === "listen") {
+                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                    }
+                    else if(sort === "like") {
+                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                    }
+                    else if(sort === "dislike") {
+                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                    }
+                    else if(sort === "creation") {
+                        playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
+                    }
+                    else if(sort === "edit") {
+                        playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
+                    }
                     let pairs = [];
                     for (let key in playlists) {
                         let list = playlists[key];
@@ -382,15 +460,15 @@ getAllPublishedPlaylistPairs = async (req, res) => {
                 }
             }).catch(err => console.log(err))
         }
-        asyncFindList();
+        asyncFindList(req.params.sort);
 }
 
 getPlaylistPairsByName = async (req, res) => {
     console.log("getPlaylistPairsByName");
-    console.log(req.body);
+    console.log(req.params);
     let cri = req.params.criteria;
     let email = req.params.email;
-        async function asyncFindList(re, em) {
+        async function asyncFindList(re, em, sort) {
             console.log("find all Playlists with " + re);
             await Playlist.find({name: {$regex: re}}, (err, playlists) => {
                 console.log("found Playlists: " + JSON.stringify(playlists));
@@ -405,6 +483,27 @@ getPlaylistPairsByName = async (req, res) => {
                 }
                 else {
                     console.log("Send the Playlist pairs");
+                    if(sort === "name") {
+                        playlists.sort((a, b) => a.name.localeCompare(b.name));
+                    }
+                    else if(sort === "publish") {
+                        playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                    }
+                    else if(sort === "listen") {
+                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                    }
+                    else if(sort === "like") {
+                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                    }
+                    else if(sort === "dislike") {
+                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                    }
+                    else if(sort === "creation") {
+                        playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
+                    }
+                    else if(sort === "edit") {
+                        playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
+                    }
                     let pairs = [];
                     for (let key in playlists) {
                         let list = playlists[key];
@@ -429,7 +528,7 @@ getPlaylistPairsByName = async (req, res) => {
                 }
             }).catch(err => console.log(err))
         }
-        asyncFindList(cri, email);
+        asyncFindList(cri, email, req.params.sort);
 }
 
 getPlaylistPairsByUser = async (req, res) => {
@@ -437,7 +536,7 @@ getPlaylistPairsByUser = async (req, res) => {
     console.log(req.body);
     let cri = req.params.criteria;
     let email = req.params.email;
-        async function asyncFindList(re, em) {
+        async function asyncFindList(re, em, sort) {
             console.log("find all Playlists with " + re);
             await Playlist.find({by: {$regex: re}}, (err, playlists) => {
                 console.log("found Playlists: " + JSON.stringify(playlists));
@@ -452,6 +551,27 @@ getPlaylistPairsByUser = async (req, res) => {
                 }
                 else {
                     console.log("Send the Playlist pairs");
+                    if(sort === "name") {
+                        playlists.sort((a, b) => a.name.localeCompare(b.name));
+                    }
+                    else if(sort === "publish") {
+                        playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                    }
+                    else if(sort === "listen") {
+                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                    }
+                    else if(sort === "like") {
+                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                    }
+                    else if(sort === "dislike") {
+                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                    }
+                    else if(sort === "creation") {
+                        playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
+                    }
+                    else if(sort === "edit") {
+                        playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
+                    }
                     let pairs = [];
                     for (let key in playlists) {
                         let list = playlists[key];
@@ -475,7 +595,7 @@ getPlaylistPairsByUser = async (req, res) => {
                 }
             }).catch(err => console.log(err))
         }
-        asyncFindList(cri, email);
+        asyncFindList(cri, email, req.params.sort);
 }
 
 module.exports = {
