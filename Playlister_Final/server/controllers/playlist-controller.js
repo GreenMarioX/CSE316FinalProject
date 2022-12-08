@@ -129,15 +129,16 @@ getPlaylistPairs = async (req, res) => {
                     }
                     else if(sort === "publish") {
                         playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                        console.log(a.publishDate);
                     }
                     else if(sort === "listen") {
-                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                        playlists.sort((a, b) => parseInt(b.listens) - parseInt(a.listens))
                     }
                     else if(sort === "like") {
-                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                        playlists.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
                     }
                     else if(sort === "dislike") {
-                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                        playlists.sort((a, b) => parseInt(b.dislikes) - parseInt(a.dislikes))
                     }
                     else if(sort === "creation") {
                         playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
@@ -186,32 +187,33 @@ getPlaylists = async (req, res) => {
                 // PUT ALL THE LISTS INTO ID, NAME PAIRS
                 console.log(playlists[0].listens)
                 if(sort === "name") {
+        
                     playlists.sort((a, b) => a.name.localeCompare(b.name));
-                    console.log("sort by name")
+                    console.log(playlists);
                 }
                 else if(sort === "publish") {
                     playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
-                    console.log("sort by pub")
+                    console.log(a.publishDate);
                 }
                 else if(sort === "listen") {
-                    playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
-                    console.log("sort by lis")
+                    playlists.sort((a, b) => parseInt(b.listens) - parseInt(a.listens))
+                    console.log(playlists);
                 }
                 else if(sort === "like") {
-                    playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
-                    console.log("sort by like")
+                    playlists.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
+                    console.log(playlists);
                 }
                 else if(sort === "dislike") {
-                    playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
-                    console.log("sort by dislike")
+                    playlists.sort((a, b) => parseInt(b.dislikes) - parseInt(a.dislikes))
+                    console.log(playlists);
                 }
                 else if(sort === "creation") {
                     playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
-                    console.log("sort by create")
+                    console.log(playlists);
                 }
                 else if(sort === "edit") {
                     playlists.sort((a, b) => new Date(a.updatedAt).getTime() <= new Date(b.updatedAt).getTime())
-                    console.log("sort by edit")
+                    console.log(playlists);
                 }
 
                 let pairs = [];
@@ -252,6 +254,24 @@ updatePlaylist = async (req, res) => {
         })
     }
 
+    let sendResponse = false;
+        await Playlist.findOne({ name: body.playlist.name }, (err, eplaylist) => {
+            if(eplaylist) { 
+                console.log("emaillll" + eplaylist.by)
+
+                if(body.playlist.by === eplaylist.by) {
+                    sendResponse = true;
+                    return res.status(200).json({
+                        success: false,
+                        message: 'Playlist not updated!',
+                    })
+                }
+            }
+        })
+        if (sendResponse){
+            return;
+        }
+        
     Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
         console.log("playlist found: " + JSON.stringify(playlist));
         if (err) {
@@ -423,15 +443,16 @@ getAllPublishedPlaylistPairs = async (req, res) => {
                     }
                     else if(sort === "publish") {
                         playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                        console.log(a.publishDate);
                     }
                     else if(sort === "listen") {
-                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                        playlists.sort((a, b) => parseInt(b.listens) - parseInt(a.listens))
                     }
                     else if(sort === "like") {
-                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                        playlists.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
                     }
                     else if(sort === "dislike") {
-                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                        playlists.sort((a, b) => parseInt(b.dislikes) - parseInt(a.dislikes))
                     }
                     else if(sort === "creation") {
                         playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
@@ -488,15 +509,16 @@ getPlaylistPairsByName = async (req, res) => {
                     }
                     else if(sort === "publish") {
                         playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                        console.log(a.publishDate);
                     }
                     else if(sort === "listen") {
-                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                        playlists.sort((a, b) => parseInt(b.listens) - parseInt(a.listens))
                     }
                     else if(sort === "like") {
-                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                        playlists.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
                     }
                     else if(sort === "dislike") {
-                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                        playlists.sort((a, b) => parseInt(b.dislikes) - parseInt(a.dislikes))
                     }
                     else if(sort === "creation") {
                         playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())
@@ -521,7 +543,6 @@ getPlaylistPairsByName = async (req, res) => {
                                 likedDislikedUsers: list.likedDislikedUsers
                             };
                             pairs.push(pair);
-                            console.log("matched!")
                         }
                     }
                     return res.status(200).json({ success: true, idNamePairs: pairs })
@@ -556,15 +577,16 @@ getPlaylistPairsByUser = async (req, res) => {
                     }
                     else if(sort === "publish") {
                         playlists.sort((a, b) => a.publishDate.localeCompare(b.publishDate));
+                        console.log(a.publishDate);
                     }
                     else if(sort === "listen") {
-                        playlists.sort((a, b) => parseInt(a.listens) >= parseInt(b.listens))
+                        playlists.sort((a, b) => parseInt(b.listens) - parseInt(a.listens))
                     }
                     else if(sort === "like") {
-                        playlists.sort((a, b) => parseInt(a.likes) >= parseInt(b.likes))
+                        playlists.sort((a, b) => parseInt(b.likes) - parseInt(a.likes))
                     }
                     else if(sort === "dislike") {
-                        playlists.sort((a, b) => parseInt(a.dislikes) >= parseInt(b.dislikes))
+                        playlists.sort((a, b) => parseInt(b.dislikes) - parseInt(a.dislikes))
                     }
                     else if(sort === "creation") {
                         playlists.sort((a, b) => new Date(a.createdAt).getTime() <= new Date(b.createdAt).getTime())

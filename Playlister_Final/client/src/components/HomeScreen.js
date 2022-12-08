@@ -12,6 +12,7 @@ import Menu from '@mui/material/Menu';
 import YoutubePlayer from './YoutubePlayer';
 import CommentListCard from './CommentListCard';
 import AuthContext from '../auth';
+import MUINameErrorModal from './MUINameErrorModal';
 
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -154,6 +155,7 @@ const HomeScreen = () => {
                     {commentsSection}
                 </Box>
             </Box>
+            <MUINameErrorModal/>
         </Box>
     )
 }

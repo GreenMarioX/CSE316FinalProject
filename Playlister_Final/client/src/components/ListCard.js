@@ -14,6 +14,8 @@ import PublishedSongListCard from './PublishedSongListCard';
 import AuthContext from '../auth';
 
 function ListCard(props) {
+    let upcolor = '#C791FD';
+    let pcolor = '#FCC36D';
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
@@ -31,6 +33,31 @@ function ListCard(props) {
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
+    }
+
+    if(store.currentList) {
+        if(store.currentList._id === idNamePair._id) {
+            if(idNamePair.publishDate !== "N/A") {
+                pcolor = '#f57fe5';
+            }
+            else {
+                upcolor = '#f57fe5';
+            }
+        }
+        else {
+            upcolor = '#C791FD';
+            pcolor = '#FCC36D';
+        }
+    }
+
+    function handleOpen() {
+        store.setOpen(idNamePair.name);
+    }
+
+    function handleClose() {
+        if(store.currentOpen === idNamePair.name) {
+            store.setClose();
+        }
     }
 
     async function handleDeleteList(event, id) {
@@ -88,18 +115,24 @@ function ListCard(props) {
         store.loadUser(auth.user.email, idNamePair.by);
     }
 
-    let dislikeButton;
-    let likeButton;
+    let dislikeButton =
+    <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 2)}>
+        {idNamePair.dislikes}
+    </Button>;
+    let likeButton =
+    <Button  aria-label="like" id="like-button" sx={{ color: "#000000", ml: 40, mr: 5}} startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 1)}>
+        {idNamePair.likes}
+    </Button>;
     let duplicateButton;
     let deleteButton;
-    if(!auth.guest) {
+    if(auth.guest) {
         likeButton =
-        <Button aria-label="like" id="like-button" sx={{ color: "#000000", ml: 40, mr: 5}} startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 1)}>
+        <Button aria-label="like" id="like-button" sx={{ color: "#000000", ml: 40, mr: 5}} startIcon={<ThumbUpAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 1)} disabled={true}>
             {idNamePair.likes}
         </Button>;
 
         dislikeButton =
-        <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 2)}>
+        <Button aria-label="dislike" id="dislike-button" sx={{ color: "#000000", mr: 5 }} startIcon={<ThumbDownAltOutlinedIcon style={{fontSize:'24pt'}} />} onClick={(event) => handleLikeDislikeListen(event, 2)} disabled={true}>
             {idNamePair.dislikes}
         </Button>;
 
@@ -121,13 +154,14 @@ function ListCard(props) {
     if(idNamePair.publishDate === "N/A") {
         cardElement =
         <Paper id={idNamePair._id} sx={{ margin: '10px', width: '95%', borderRadius: '5px' }}> 
-            <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: '#C791FD', "&:hover":{ bgcolor: '#C791FD' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onDoubleClick={handleToggleEdit}>
+            <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: upcolor, "&:hover":{ bgcolor:upcolor }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onDoubleClick={handleToggleEdit} onClick={(event) => {handleLoadList(event, idNamePair._id)} }>
                 <Box sx={{ pr: 10, pl: 1, fontSize: 30, fontWeight: 'bold', width: '100%' }}>{idNamePair.name}</Box>
                 <Box sx={{ pl: 1, fontSize: 20, width: '55%'}}>By: {<Link component='button' onClick={handleLoadUser} sx={{ fontSize: 20 }}>{idNamePair.by} </Link>} </Box>
                 <Box sx={{ fontSize: 15, width: '25%'}}>Published: {idNamePair.publishDate}</Box>
                 <Box sx={{ fontSize: 15, width: '15%'}}>Listens: {idNamePair.listens}</Box>
+                
             </ListItem>
-            <Accordion id={idNamePair._id} sx={{ bgcolor: '#DDC2f7', '&:before': {display: 'none'} }} elevation={0} disableGutters onChange={(event, expanded) => { if(expanded) {handleLoadList(event, idNamePair._id)} }}>
+            <Accordion id={idNamePair._id} sx={{ bgcolor: upcolor, '&:before': {display: 'none'} }} elevation={0} disableGutters expanded={store.currentOpen === idNamePair.name} onClick={handleClose} onChange={handleOpen}>
                 <AccordionSummary expandIcon={<KeyboardDoubleArrowDownIcon style={{ fontSize: 30, color: 'black' }}/>}/>
                 <AccordionDetails sx={{ maxHeight: 400, overflowY: 'auto' }}>
                     <SongListCard songs={idNamePair.songs}/>
@@ -149,7 +183,7 @@ function ListCard(props) {
     else {
         cardElement =
         <Paper id={idNamePair._id} sx={{ margin: '10px', width: '95%', borderRadius: '5px' }}> 
-            <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: '#FAAA31', "&:hover":{ bgcolor: '#FAAA31' }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button>
+            <ListItem id={idNamePair._id} key={idNamePair._id} sx={{ height: '20%', p: 1, flexWrap: 'wrap', bgcolor: pcolor, "&:hover":{ bgcolor: pcolor }, borderTopRightRadius: '5px', borderTopLeftRadius: '5px' }} button onClick={(event) => {handleLoadList(event, idNamePair._id)} }>
                 <Box sx={{ pr: 10, pl: 1, fontSize: 30, fontWeight: 'bold' }}>{idNamePair.name}</Box>
                 {likeButton}
                 {dislikeButton}
@@ -157,7 +191,7 @@ function ListCard(props) {
                 <Box sx={{ fontSize: 15, width: '25%'}}>Published: {idNamePair.publishDate}</Box>
                 <Box sx={{ fontSize: 15, width: '15%'}}>Listens: {idNamePair.listens}</Box>
             </ListItem>
-            <Accordion id={idNamePair._id} sx={{ bgcolor: '#FCC36D', '&:before': {display: 'none'} }} elevation={0} disableGutters onChange={(event, expanded) => { if(expanded) {handleLoadList(event, idNamePair._id)} }}>
+            <Accordion id={idNamePair._id} sx={{ bgcolor: pcolor, '&:before': {display: 'none'} }} elevation={0} disableGutters expanded={store.currentOpen === idNamePair.name} onClick={handleClose} onChange={handleOpen}>
                 <AccordionSummary expandIcon={ <KeyboardDoubleArrowDownIcon style={{ fontSize: 30, color: 'black' }}/> }/>
                 <AccordionDetails sx={{ maxHeight: 400, overflowY: 'auto' }}>
                     <PublishedSongListCard songs={idNamePair.songs}></PublishedSongListCard>
@@ -170,7 +204,7 @@ function ListCard(props) {
     }
 
     if (editActive) {
-        cardElement = <TextField margin="normal" required width='100%' id={"list-" + idNamePair._id} label="Playlist Name" name="name" autoComplete="Playlist Name" className='list-card' onKeyPress={handleKeyPress} onChange={handleUpdateText} defaultValue={idNamePair.name} inputProps={{style: {fontSize: 48}}} InputLabelProps={{style: {fontSize: 24}}} autoFocus/>
+        cardElement = <TextField margin="normal" required width='100%' id={"list-" + idNamePair._id} label="Search" name="name" autoComplete="Playlist Name" className='list-card' onKeyPress={handleKeyPress} onChange={handleUpdateText} defaultValue={idNamePair.name} inputProps={{style: {fontSize: 48}}} InputLabelProps={{style: {fontSize: 24}}} autoFocus/>
     }
 
     return (
