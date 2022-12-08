@@ -23,6 +23,7 @@ export default function AppBanner() {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+    
     const handleLogout = () => {
         handleMenuClose();
         store.closeCurrentList();
